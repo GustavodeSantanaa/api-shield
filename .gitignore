@@ -1,33 +1,126 @@
-HELP.md
+# ========================================
+# 🚀 Java + Spring Boot + IntelliJ IDEA
+# ========================================
+
+# --- Compilados Java ---
+*.class
+*.jar
+*.war
+*.ear
+
+# --- Logs ---
+*.log
+*.tmp
+*.out
+
+# --- Dumps de JVM ---
+hs_err_pid*
+replay_pid*
+
+# --- Arquivos temporários ---
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# ========================================
+# 🧩 Maven
+# ========================================
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# ========================================
+# 🧱 Gradle
+# ========================================
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
 
-### IntelliJ IDEA ###
-.idea
+# ========================================
+# 💡 IntelliJ IDEA
+# ========================================
+.idea/
 *.iws
 *.iml
 *.ipr
+out/
+# Plugin de cache do IntelliJ
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/dictionaries
+.idea/**/shelf/
+.idea/**/dataSources/
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/gradle.xml
+.idea/**/libraries/
+.idea/**/vcs.xml
+.idea/**/jarRepositories.xml
+.idea/**/compiler.xml
+.idea/**/modules.xml
+.idea/**/caches/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# ========================================
+# 🧰 VS Code (caso você abra o projeto lá)
+# ========================================
 .vscode/
+
+# ========================================
+# 🧠 Sistema Operacional
+# ========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ========================================
+# 🔒 Arquivos sensíveis
+# ========================================
+.env
+*.env
+*.key
+*.pem
+*.p12
+*.crt
+*.cer
+
+# ========================================
+# 🧪 Test Coverage / Relatórios
+# ========================================
+/coverage/
+*.lcov
+*.exec
+jacoco.exec
+test-output/
+
+# ========================================
+# 📦 Dependências locais e binários
+# ========================================
+/node_modules/
+/bin/
+/build/
+
+# ========================================
+# 🧹 Cache e indexação
+# ========================================
+/.classpath
+/.project
+/.settings/
+/.metadata/

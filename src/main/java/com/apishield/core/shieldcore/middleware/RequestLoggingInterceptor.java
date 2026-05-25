@@ -2,11 +2,17 @@ package com.apishield.core.shieldcore.middleware;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import com.apishield.core.shieldcore.domain.RequestLog;
+import com.apishield.core.shieldcore.service.RequestLogService;
 
 @Component
 public class RequestLoggingInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    private RequestLogService requestLogService;
 
     private static final String START_TIME = "startTime";
 
@@ -50,6 +56,18 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         long executionTime = System.currentTimeMillis() - startTime;
 
         int status = response.getStatus();
+
+        RequestLog requestLog = new RequestLog();
+
+        requestLog.setMethod(request.getMethod());
+        requestLog.setEndpoint(request.getRequestURI());
+        requestLog.setIp(request.getRemoteAddr());
+
+        requestLog.setResponseStatus(response.getStatus());
+
+        requestLog.setExecutionTimeMs(executionTime);
+
+        requestLogService.saveLog(requestLog);
 
         System.out.println(
                 "[API SHIELD] Response completed -> " +

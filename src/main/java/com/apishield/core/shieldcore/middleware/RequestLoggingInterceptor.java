@@ -1,5 +1,6 @@
 package com.apishield.core.shieldcore.middleware;
 
+import com.apishield.core.shieldcore.service.RateLimitService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,11 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
     @Autowired
     private RequestLogService requestLogService;
 
+    @Autowired
+    private RateLimitService rateLimitService;
+
     private static final String START_TIME = "startTime";
+
 
     @Override
     public boolean preHandle(
@@ -30,6 +35,17 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         String method = request.getMethod();
         String endpoint = request.getRequestURI();
         String ip = request.getRemoteAddr();
+
+        String apiKey = request.getHeader("x-api-key");
+
+        if (!rateLimitService.isValidApiKey(apiKey)) {
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            response.getWriter().write("Invalid API Key");
+
+            return false;
+        }
 
         System.out.println(
                 "[API SHIELD] Incoming request -> " +
@@ -57,6 +73,7 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
         int status = response.getStatus();
 
+
         RequestLog requestLog = new RequestLog();
 
         requestLog.setMethod(request.getMethod());
@@ -66,6 +83,10 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         requestLog.setResponseStatus(response.getStatus());
 
         requestLog.setExecutionTimeMs(executionTime);
+
+        requestLog.setApiKey(
+                request.getHeader("x-api-key")
+        );
 
         requestLogService.saveLog(requestLog);
 

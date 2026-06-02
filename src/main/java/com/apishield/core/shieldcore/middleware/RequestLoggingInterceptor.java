@@ -47,6 +47,15 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        if (!rateLimitService.isAllowed(apiKey)) {
+
+            response.setStatus(429);
+
+            response.getWriter().write("Rate limit exceeded");
+
+            return false;
+        }
+
         System.out.println(
                 "[API SHIELD] Incoming request -> " +
                         method +

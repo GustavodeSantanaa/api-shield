@@ -1,7 +1,9 @@
 package com.apishield.core.shieldcore.service.impl;
 
+import com.apishield.core.shieldcore.domain.RateLimitInfo;
 import com.apishield.core.shieldcore.service.RateLimitService;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,24 +12,37 @@ public class RateLimitServiceImpl implements RateLimitService {
 
     private static final String VALID_API_KEY = "api-shield-secret-key";
 
+    private static final long WINDOW_DURATION_MS = 60_000;
+
     private static final int MAX_REQUESTS = 5;
 
-    private final Map<String, Integer> requestCounts =
+    private final Map<String, RateLimitInfo> requestCounts =
             new ConcurrentHashMap<>();
 
     @Override
     public boolean isAllowed(String apiKey) {
 
-        int currentCount = requestCounts.getOrDefault(apiKey, 0);
+        if(!requestCounts.containsKey(apiKey)){
+            RateLimitInfo info =
+                    new RateLimitInfo(
+                            1,
+                            System.currentTimeMillis()
+                    );
 
-        if (currentCount >= MAX_REQUESTS) {
-            return false;
+            requestCounts.put(apiKey, info);
+
+            return true;
         }
 
-        requestCounts.put(apiKey, currentCount + 1);
+        RateLimitInfo info = requestCounts.get(apiKey);
 
-        return true;
+        long currentTime = System.currentTimeMillis();
 
+        long elapsedTime = currentTime - info.getWindowStartTime();
+
+        if (elapsedTime > WINDOW_DURATION_MS){
+
+        }
     }
 
     @Override

@@ -6,6 +6,9 @@ public class RateLimitInfo {
 
     private long windowStartTime;
 
+    public RateLimitInfo() {
+    }
+
     public RateLimitInfo(int requestCount, long windowStartTime) {
         this.requestCount = requestCount;
         this.windowStartTime = windowStartTime;
@@ -25,5 +28,9 @@ public class RateLimitInfo {
 
     public void setWindowStartTime(long windowStartTime) {
         this.windowStartTime = windowStartTime;
+    }
+
+    public void incrementRequestCount() {
+        this.requestCount++;
     }
 }

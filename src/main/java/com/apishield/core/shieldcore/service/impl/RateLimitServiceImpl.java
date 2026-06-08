@@ -40,7 +40,7 @@ public class RateLimitServiceImpl implements RateLimitService {
 
         long elapsedTime = currentTime - info.getWindowStartTime();
 
-        if (elapsedTime > WINDOW_DURATION_MS){
+        if (elapsedTime >= WINDOW_DURATION_MS){
             info.setRequestCount(1);
 
             info.setWindowStartTime(currentTime);

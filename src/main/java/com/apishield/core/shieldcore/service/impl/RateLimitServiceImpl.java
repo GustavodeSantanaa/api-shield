@@ -47,6 +47,14 @@ public class RateLimitServiceImpl implements RateLimitService {
 
             return true;
         }
+
+        if (info.getRequestCount() >= MAX_REQUESTS) {
+            return false;
+        }
+
+        info.incrementRequestCount();
+
+        return true;
     }
 
     @Override

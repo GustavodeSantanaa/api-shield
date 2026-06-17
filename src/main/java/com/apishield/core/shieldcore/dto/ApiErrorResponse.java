@@ -1,5 +1,7 @@
 package com.apishield.core.shieldcore.dto;
 
+import java.time.LocalDateTime;
+
 public class ApiErrorResponse {
 
     private String timestamp;

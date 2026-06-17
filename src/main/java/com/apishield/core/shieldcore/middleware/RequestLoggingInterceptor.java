@@ -47,44 +47,24 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
         if (!rateLimitService.isValidApiKey(apiKey)) {
 
-            ApiErrorResponse errorResponse =
-                    new ApiErrorResponse(
-                            LocalDateTime.now().toString(),
-                            401,
-                            "Unauthorized",
-                            "Invalid API Key"
-                    );
-
-            String jsonResponse =
-                    objectMapper.writeValueAsString(errorResponse);
-
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            response.setContentType("application/json");
-
-            response.getWriter().write(jsonResponse);
+            writeErrorResponse(
+                    response,
+                    401,
+                    "Unauthorized",
+                    "Invalid API Key"
+            );
 
             return false;
         }
 
         if (!rateLimitService.isAllowed(apiKey)) {
 
-            ApiErrorResponse errorResponse =
-                    new ApiErrorResponse(
-                            LocalDateTime.now().toString(),
-                            429,
-                            "Too Many Requests",
-                            "Rate limit exceeded"
-                    );
-
-            String jsonResponse =
-                    objectMapper.writeValueAsString(errorResponse);
-
-            response.setStatus(429);
-
-            response.setContentType("application/json");
-
-            response.getWriter().write(jsonResponse);
+            writeErrorResponse(
+                    response,
+                    429,
+                    "Too Many Requests",
+                    "Rate limit exceeded"
+            );
 
             return false;
         }
@@ -141,4 +121,29 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
                         "ms"
         );
     }
+
+    private void writeErrorResponse(
+            HttpServletResponse response,
+            int status,
+            String error,
+            String message
+    ) throws Exception {
+        ApiErrorResponse errorResponse =
+                new ApiErrorResponse(
+                        LocalDateTime.now().toString(),
+                        status,
+                        error,
+                        message
+                );
+
+        String jsonResponse =
+                objectMapper.writeValueAsString(errorResponse);
+
+        response.setStatus(status);
+
+        response.setContentType("application/json");
+
+        response.getWriter().write(jsonResponse);
+    }
+
 }

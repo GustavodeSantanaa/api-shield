@@ -1,6 +1,8 @@
 package com.apishield.core.shieldcore.middleware;
 
+import com.apishield.core.shieldcore.dto.ApiErrorResponse;
 import com.apishield.core.shieldcore.service.RateLimitService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import com.apishield.core.shieldcore.domain.RequestLog;
 import com.apishield.core.shieldcore.service.RequestLogService;
+
+import java.time.LocalDateTime;
 
 @Component
 public class RequestLoggingInterceptor implements HandlerInterceptor {
@@ -19,6 +23,9 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
     private RateLimitService rateLimitService;
 
     private static final String START_TIME = "startTime";
+
+    private final ObjectMapper objectMapper =
+            new ObjectMapper();
 
 
     @Override
@@ -40,18 +47,44 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
         if (!rateLimitService.isValidApiKey(apiKey)) {
 
+            ApiErrorResponse errorResponse =
+                    new ApiErrorResponse(
+                            LocalDateTime.now().toString(),
+                            401,
+                            "Unauthorized",
+                            "Invalid API Key"
+                    );
+
+            String jsonResponse =
+                    objectMapper.writeValueAsString(errorResponse);
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-            response.getWriter().write("Invalid API Key");
+            response.setContentType("application/json");
+
+            response.getWriter().write(jsonResponse);
 
             return false;
         }
 
         if (!rateLimitService.isAllowed(apiKey)) {
 
+            ApiErrorResponse errorResponse =
+                    new ApiErrorResponse(
+                            LocalDateTime.now().toString(),
+                            429,
+                            "Too Many Requests",
+                            "Rate limit exceeded"
+                    );
+
+            String jsonResponse =
+                    objectMapper.writeValueAsString(errorResponse);
+
             response.setStatus(429);
 
-            response.getWriter().write("Rate limit exceeded");
+            response.setContentType("application/json");
+
+            response.getWriter().write(jsonResponse);
 
             return false;
         }

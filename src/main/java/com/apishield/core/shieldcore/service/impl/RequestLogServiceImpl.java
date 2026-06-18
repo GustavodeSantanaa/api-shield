@@ -1,11 +1,13 @@
 package com.apishield.core.shieldcore.service.impl;
 
 import com.apishield.core.shieldcore.domain.RequestLog;
+import com.apishield.core.shieldcore.dto.EndpointStatsResponse;
 import com.apishield.core.shieldcore.repository.RequestLogRepository;
 import com.apishield.core.shieldcore.service.RequestLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +51,43 @@ public class RequestLogServiceImpl implements RequestLogService {
 
         return requestLogRepository
                 .countByResponseStatus(status);
+
+    }
+
+    @Override
+    public List<Object[]> countRequestsByEndpoint() {
+
+        return requestLogRepository
+                .countRequestsByEndpoint();
+
+    }
+
+    @Override
+    public List getEndpointStats() {
+
+        List<Object[]> results =
+                requestLogRepository.countRequestsByEndpoint();
+
+        List<EndpointStatsResponse> stats =
+                new ArrayList<>();
+
+        for (Object[] result : results) {
+
+            String endpoint =
+                    (String) result[0];
+
+            Long requestCount =
+                    (Long) result[1];
+
+            stats.add(
+                    new EndpointStatsResponse(
+                            endpoint,
+                            requestCount
+                    )
+            );
+        }
+
+        return stats;
 
     }
 }

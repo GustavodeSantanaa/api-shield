@@ -1,6 +1,7 @@
 package com.apishield.core.shieldcore.controller;
 
 import com.apishield.core.shieldcore.domain.RequestLog;
+import com.apishield.core.shieldcore.dto.EndpointStatsResponse;
 import com.apishield.core.shieldcore.dto.LogStatsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,4 +65,13 @@ public class RequestLogController {
                 blockedRequests
         );
     }
+
+    @GetMapping("/endpoint-count")
+    public List<EndpointStatsResponse> getEndpointStats(){
+
+        return requestLogService.getEndpointStats();
+
+    }
+
+
 }

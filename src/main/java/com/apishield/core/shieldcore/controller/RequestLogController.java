@@ -1,11 +1,9 @@
 package com.apishield.core.shieldcore.controller;
 
 import com.apishield.core.shieldcore.domain.RequestLog;
+import com.apishield.core.shieldcore.dto.LogStatsResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.apishield.core.shieldcore.service.RequestLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,9 +17,20 @@ public class RequestLogController {
     @Autowired
     private RequestLogService requestLogService;
 
-    @GetMapping()
+    @GetMapping
     public List<RequestLog> getLogs() {
+
         return requestLogService.findAllLogs();
+
+    }
+
+    @GetMapping("/status/{status}")
+    public List<RequestLog> getLogsByStatus(
+            @PathVariable Integer status
+    ) {
+
+        return requestLogService.findByResponseStatus(status);
+
     }
 
     @GetMapping("/{id}")
@@ -35,5 +44,24 @@ public class RequestLogController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/stats")
+    public LogStatsResponse getStats() {
+
+        Long totalRequests =
+                requestLogService.countLogs();
+
+        Long successfulRequests =
+                requestLogService.countByResponseStatus(200);
+
+        Long blockedRequests =
+                requestLogService.countByResponseStatus(429);
+
+        return new LogStatsResponse(
+                totalRequests,
+                successfulRequests,
+                blockedRequests
+        );
     }
 }

@@ -33,4 +33,22 @@ public class RequestLogServiceImpl implements RequestLogService {
 
         return requestLogRepository.findById(log);
     }
+
+    @Override
+    public List<RequestLog> findByResponseStatus(Integer status) {
+        return requestLogRepository.findByResponseStatus(status);
+    }
+
+    @Override
+    public Long countLogs() {
+        return requestLogRepository.count();
+    }
+
+    @Override
+    public Long countByResponseStatus(Integer status) {
+
+        return requestLogRepository
+                .countByResponseStatus(status);
+
+    }
 }

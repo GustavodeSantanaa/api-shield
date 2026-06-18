@@ -12,4 +12,10 @@ public interface RequestLogService {
     List<RequestLog> findAllLogs();
 
     Optional<RequestLog> findById(Long log);
+
+    List<RequestLog> findByResponseStatus(Integer status);
+
+    Long countLogs();
+
+    Long countByResponseStatus(Integer status);
 }

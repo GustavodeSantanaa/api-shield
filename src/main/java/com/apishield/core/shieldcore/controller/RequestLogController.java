@@ -3,6 +3,8 @@ package com.apishield.core.shieldcore.controller;
 import com.apishield.core.shieldcore.domain.RequestLog;
 import com.apishield.core.shieldcore.dto.EndpointStatsResponse;
 import com.apishield.core.shieldcore.dto.LogStatsResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.apishield.core.shieldcore.service.RequestLogService;
@@ -13,11 +15,19 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/logs")
+@Tag(
+        name = "Logs",
+        description = "Operações relacionadas aos logs da API"
+)
 public class RequestLogController {
 
     @Autowired
     private RequestLogService requestLogService;
 
+    @Operation(
+            summary = "Listar todos os logs",
+            description = "Retorna todos os logs registrados pela API"
+    )
     @GetMapping
     public List<RequestLog> getLogs() {
 

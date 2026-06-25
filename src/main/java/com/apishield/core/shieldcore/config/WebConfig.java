@@ -14,6 +14,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestLoggingInterceptor);
+
+        registry.addInterceptor(requestLoggingInterceptor)
+                .excludePathPatterns(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**"
+                );
     }
+
 }

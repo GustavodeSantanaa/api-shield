@@ -1,6 +1,8 @@
 package com.apishield.core.shieldcore.middleware;
 
+import com.apishield.core.shieldcore.domain.ApiKey;
 import com.apishield.core.shieldcore.dto.ApiErrorResponse;
+import com.apishield.core.shieldcore.service.ApiKeyService;
 import com.apishield.core.shieldcore.service.RateLimitService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +23,9 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
     @Autowired
     private RateLimitService rateLimitService;
+
+    @Autowired
+    private ApiKeyService apiKeyService;
 
     private static final String START_TIME = "startTime";
 
@@ -43,9 +48,25 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         String endpoint = request.getRequestURI();
         String ip = request.getRemoteAddr();
 
-        String apiKey = request.getHeader("x-api-key");
+        String apiKeyValue = request.getHeader("x-api-key");
 
-        if (!rateLimitService.isValidApiKey(apiKey)) {
+        if (apiKeyValue == null || apiKeyValue.isBlank()) {
+
+            writeErrorResponse(
+                    response,
+                    401,
+                    "Unauthorized",
+                    "API Key not provided"
+            );
+
+            return false;
+        }
+
+        ApiKey apiKey = apiKeyService
+                .findByApiKey(apiKeyValue)
+                .orElse(null);
+
+        if (apiKey == null) {
 
             writeErrorResponse(
                     response,
@@ -57,7 +78,19 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (!rateLimitService.isAllowed(apiKey)) {
+        if (!apiKey.getActive()) {
+
+            writeErrorResponse(
+                    response,
+                    401,
+                    "Unauthorized",
+                    "API Key is inactive"
+            );
+
+            return false;
+        }
+
+        if (!rateLimitService.isAllowed(apiKeyValue)) {
 
             writeErrorResponse(
                     response,
@@ -68,6 +101,10 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
             return false;
         }
+
+        apiKey.setLastUsed(LocalDateTime.now());
+
+        apiKeyService.save(apiKey);
 
         System.out.println(
                 "[API SHIELD] Incoming request -> " +
